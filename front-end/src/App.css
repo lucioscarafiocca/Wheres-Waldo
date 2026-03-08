@@ -51,10 +51,15 @@
 }
 
 .border {
-  padding: 200px;
+  /* display: flex;
+  max-height: 150px;
+  max-width: 100px; */
+
+  padding: 50px;
+  padding-bottom: 100px;
   z-index: 1;
   position: absolute;
-  border: black 10px solid;
+  border: black 3px solid;
   visibility: hidden;
 }
 
@@ -64,8 +69,6 @@
 }
 
 .canvas {
-  height: auto;
-  max-width: 1920px;
   display: block;
   object-fit: contain;
 }
