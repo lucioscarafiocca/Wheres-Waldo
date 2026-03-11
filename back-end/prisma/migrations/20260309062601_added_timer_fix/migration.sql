@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Timer" ALTER COLUMN "StartTime" SET DATA TYPE BIGINT;

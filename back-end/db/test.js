@@ -8,7 +8,7 @@ const adapter = new PrismaPg({
 const prisma = new PrismaClient({ adapter })
 
 async function main() {
-  const post = await prisma.character.findMany()
+  const post = await prisma.timer.findMany()
   console.log(post)
 }
 

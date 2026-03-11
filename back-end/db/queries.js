@@ -9,6 +9,16 @@ async function GetCords(name) {
   return cords
 }
 
+async function StartTimer(time) {
+  const timer = await prisma.timer.create({
+    data: {
+      StartTime: time,
+    },
+  })
+  return timer
+}
+
 module.exports = {
   GetCords,
+  StartTimer,
 }

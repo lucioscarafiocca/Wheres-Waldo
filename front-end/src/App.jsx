@@ -16,85 +16,82 @@ import CharacterImage from "./characterImage"
 
 function App() {
   const [ctx, setCtx] = useState(null)
-  const [active, setActive] = useState(false)
   const [userPick, setUserPick] = useState({})
-  // const [array, setArray] = useState([])
+  const [id, setId] = useState()
   const ref = useRef(null)
   const canvasRef = useRef(null)
   const menuRef = useRef(null)
+  const containerRef = useRef(null)
   const characterImages = [
     [waldo, "waldo"],
     [odlaw, "odlaw"],
     [wenda, "wenda"],
     [wizard, "wizard"],
-    [woof, "woof"],
   ]
-  function handleVerification() {
+  function handleVerification(name) {
     console.log(userPick)
-    const { newX, newY, name } = userPick
-    if (name !== undefined) {
-      axios
-        .get(`http://localhost:3000/cords/${name}?x=${newX}&y=${newY}`)
-        .then((response) => {
-          // console.log(response.data)
-
-          drawBorder(response.data, ctx)
-        })
-        .catch((error) => console.log(error.response))
-    } else {
-      console.log("no name given lol")
-    }
+    const { newX, newY } = userPick
+    axios
+      .get(`http://localhost:3000/cords/${name}?x=${newX}&y=${newY}`)
+      .then((response) => {
+        // console.log(response.data)
+        drawBorder(response.data, ctx)
+        ref.current.style.visibility = "hidden"
+        menuRef.current.style.visibility = "hidden"
+      })
+      .catch((error) => {
+        console.log(error.response)
+        ref.current.style.visibility = "hidden"
+        menuRef.current.style.visibility = "hidden"
+      })
   }
 
   function boxHandler(container) {
-    if (!active) {
-      const width = canvasRef.current.clientWidth
-      const height = canvasRef.current.clientHeight
-      const x = container.offsetX
-      const y = container.offsetY
-      const border = ref.current
-      border.style.top = `${y - 75}px`
-      border.style.left = `${x - 50}px`
-      border.style.visibility = "visible"
-      menuRef.current.style.visibility = "visible"
+    const width = canvasRef.current.clientWidth
+    const height = canvasRef.current.clientHeight
+    const x = container.offsetX
+    const y = container.offsetY
+    console.log(container)
+    console.log(x, y)
+    const border = ref.current
+    const menu = menuRef.current
+    border.style.top = `${y - 75}px`
+    border.style.left = `${x - 50}px`
+    border.style.visibility = "visible"
+    menu.style.visibility = "visible"
+    menu.style.left = `${x + 75}px`
+    menu.style.top = `${y}px`
+    // menu.style.top = `${y - 100}px`
+    // menu.style.left = `${x - 75}px`
 
-      // const pixel = ctx.getImageData(x, y, 1, 1)
-      // console.log(pixel)
-      // pixel.data[0] = 0
-      // pixel.data[1] = 0
-      // pixel.data[2] = 0
-      // pixel.data[3] = 255
-      // ctx.putImageData(pixel, x, y)
+    // const pixel = ctx.getImageData(x, y, 1, 1)
+    // console.log(pixel)
+    // pixel.data[0] = 0
+    // pixel.data[1] = 0
+    // pixel.data[2] = 0
+    // pixel.data[3] = 255
+    // ctx.putImageData(pixel, x, y)
 
-      const image = ctx.getImageData(0, 0, 2560, 1644)
-      const newX = Math.round((2560 / width).toFixed(3) * x)
-      const newY = Math.round((1644 / height).toFixed(3) * y)
+    const newX = Math.round((2560 / width).toFixed(3) * x)
+    const newY = Math.round((1644 / height).toFixed(3) * y)
+    setUserPick({ newX, newY })
 
-      // array.push([x, y])
-      // console.log(array)
+    // const image = ctx.getImageData(0, 0, 2560, 1644)
+    // image.data[(newY * 2560 + newX) * 4] = 231
+    // image.data[(newY * 2560 + newX) * 4 + 1] = 0
+    // image.data[(newY * 2560 + newX) * 4 + 2] = 255
+    // image.data[(newY * 2560 + newX) * 4 + 3] = 255
+    // ctx.putImageData(image, 0, 0)
 
-      image.data[(newY * 2560 + newX) * 4] = 231
-      image.data[(newY * 2560 + newX) * 4 + 1] = 0
-      image.data[(newY * 2560 + newX) * 4 + 2] = 255
-      image.data[(newY * 2560 + newX) * 4 + 3] = 255
-      setUserPick({ ...userPick, newX, newY })
+    // console.log(newY, newX)
 
-      console.log(newY, newX)
+    //drawBorder(girl, ctx)
 
-      ctx.putImageData(image, 0, 0)
-
-      //drawBorder(girl, ctx)
-
-      // const image2 = ctx.getImageData(0, 0, width, height)
-      // const pixel = image2.data[(y * width + x) * 4]
-      // const pixel2 = image2.data[(y * width + x) * 4 + 1]
-      // const pixel3 = image2.data[(y * width + x) * 4 + 2]
-      // const pixel4 = image2.data[(y * width + x) * 4 + 3]
-
-      setActive(true)
-    } else {
-      console.log("box is on")
-    }
+    // const image2 = ctx.getImageData(0, 0, width, height)
+    // const pixel = image2.data[(y * width + x) * 4]
+    // const pixel2 = image2.data[(y * width + x) * 4 + 1]
+    // const pixel3 = image2.data[(y * width + x) * 4 + 2]
+    // const pixel4 = image2.data[(y * width + x) * 4 + 3]
   }
 
   function drawBorder(cords, context, color) {
@@ -109,6 +106,11 @@ function App() {
     context.putImageData(image, 0, 0)
   }
 
+  // function handleResize() {
+  //   console.log(containerRef.current.style)
+  //   canvasRef.current.style.width = `${(window.innerWidth / 100) * 80}px`
+  //   canvasRef.current.style.height = `${(window.innerHeight / 100) * 80}px`
+  // }
   useEffect(() => {
     const ctx = canvasRef.current.getContext("2d")
     const img = new Image()
@@ -116,70 +118,122 @@ function App() {
     img.onload = () => ctx.drawImage(img, 0, 0, 2560, 1644)
     ctx.imageSmoothingEnabled = false
     setCtx(ctx)
+    // window.addEventListener("resize", handleResize)
+
+    // return () => {
+    //   window.removeEventListener("resize", handleResize)
+    // }
+
+    // axios
+    //   .post("http://localhost:3000/timer")
+    //   .then((response) => {
+    //     // console.log(response.data)
+    //     console.log(response)
+    //     setId(response)
+    //   })
+    //   .catch((error) => {
+    //     console.log(error.response)
+    //   })
+
     // drawSquare(canvasRef.current, ctx, "red")
   }, [])
 
   return (
     <>
-      <div ref={menuRef} className="menu">
-        {characterImages.map((element) => {
-          return (
-            <img
-              key={element[1]}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "lightgrey"
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "white"
-              }}
-              onClick={(e) => {
-                const images = menuRef.current.children
-                for (let element of images) {
-                  element.style.border = ""
-                  e.currentTarget.style.border = "2px solid red"
-                }
-                setUserPick({ ...userPick, name: element[1] })
-              }}
-              src={element[0]}
-              alt={element[1]}
-            />
-          )
-        })}
-
-        <button onClick={() => handleVerification()}> Confirm</button>
-        <button
-          onClick={() => {
-            const images = menuRef.current.children
-            for (let element of images) {
-              element.style.border = ""
-            }
-
-            ref.current.style.visibility = "hidden"
-            menuRef.current.style.visibility = "hidden"
-            setActive(false)
-          }}
-        >
-          Cancel
-        </button>
+      <div className="header">
+        <h1>Wheres Waldo</h1>
       </div>
+      <div className="center">
+        <div ref={menuRef} className="menu">
+          {characterImages.map((element) => {
+            return (
+              <img
+                key={element[1]}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "lightgrey"
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = ""
+                }}
+                onClick={async () => {
+                  handleVerification(element[1])
+                }}
+                src={element[0]}
+                alt={element[1]}
+              />
+            )
+          })}
+        </div>
 
-      {/* <div
+        {/* <div
         onClick={(e) => boxHandler(e.nativeEvent, e.currentTarget.firstChild)}
         className="container"
       >
         <div ref={ref} className="border"></div>
       </div> */}
-      <div
-        className="container"
-        onClick={(e) => boxHandler(e.nativeEvent, e.currentTarget.firstChild)}
-      >
-        <div ref={ref} className="border"></div>
-        <canvas
-          className="canvas"
-          ref={canvasRef}
-          width={2560}
-          height={1644}
-        ></canvas>
+        <div
+          ref={containerRef}
+          className="container"
+          onClick={(e) => boxHandler(e.nativeEvent)}
+        >
+          <div ref={ref} className="border"></div>
+          <canvas
+            className="canvas"
+            ref={canvasRef}
+            width={2560}
+            height={1644}
+          ></canvas>
+        </div>
+        <div className="targets">
+          <h3>Characters</h3>
+          {characterImages.map((element) => {
+            return <img key={element[1]} src={element[0]} />
+          })}
+          <svg
+            onClick={(e) => console.log("e")}
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <path
+                d="M19.9604 11.4802C19.9604 13.8094 19.0227 15.9176 17.5019 17.4512C16.9332 18.0247 16.2834 18.5173 15.5716 18.9102C14.3594 19.5793 12.9658 19.9604 11.4802 19.9604C6.79672 19.9604 3 16.1637 3 11.4802C3 6.79672 6.79672 3 11.4802 3C16.1637 3 19.9604 6.79672 19.9604 11.4802Z"
+                stroke="#333333"
+                strokeWidth="2"
+              ></path>
+              <path
+                d="M18.1553 18.1553L21.8871 21.8871"
+                stroke="#333333"
+                strokeWidth="2"
+                strokeLinecap="round"
+              ></path>
+              <path
+                d="M8 11.5492H15.0983"
+                stroke="#333333"
+                strokeWidth="2"
+                strokeLinecap="round"
+              ></path>
+              <path
+                d="M8 11.5492H15.0983"
+                stroke="#333333"
+                strokeWidth="2"
+                strokeLinecap="round"
+              ></path>
+              <path
+                d="M11.5492 15.0984L11.5492 8.00006"
+                stroke="#333333"
+                strokeWidth="2"
+                strokeLinecap="round"
+              ></path>
+            </g>
+          </svg>
+        </div>
       </div>
     </>
   )

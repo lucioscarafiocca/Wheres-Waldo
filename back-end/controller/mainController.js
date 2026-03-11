@@ -38,6 +38,12 @@ async function validateSelection(req, res) {
   // console.log(JSON.parse(cords.coordinates))
 }
 
+async function TimerGet(req, res) {
+  const time = Date.now()
+  const timer = await db.StartTimer(time)
+  res.json(timer.id)
+}
 module.exports = {
   validateSelection,
+  TimerGet,
 }
