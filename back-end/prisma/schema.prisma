@@ -26,6 +26,13 @@ model Character {
 }
 
 model Timer {
-  id Int @id @default(autoincrement())
+  id String @id @default(uuid())
   StartTime BigInt
+  FinalTime Int?
+}
+
+model Highscores {
+  id String @id @default(uuid())
+  score Int 
+  username String 
 }

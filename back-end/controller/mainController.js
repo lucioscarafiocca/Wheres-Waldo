@@ -43,7 +43,30 @@ async function TimerGet(req, res) {
   const timer = await db.StartTimer(time)
   res.json(timer.id)
 }
+
+async function HighscoresGet(req, res) {
+  const { id } = req.params
+  const time = await db.GetTime(id)
+  const score = (Date.now() - Number(time.StartTime)) / 1000
+  const check = await db.CheckScore(score)
+  if (check.length < 20) {
+    db.StoreFinalTime(id, score)
+    res.json({ highscore: true, score: score })
+  } else {
+    res.json({ highscore: false, score: score })
+  }
+}
+
+async function HighscoresPost(req, res) {
+  const { id } = req.params
+  const { username } = req.body
+  const score = await db.GetTime(id)
+  const user = await db.PostScore(score.FinalTime, username)
+  res.json(user)
+}
 module.exports = {
   validateSelection,
   TimerGet,
+  HighscoresGet,
+  HighscoresPost,
 }
